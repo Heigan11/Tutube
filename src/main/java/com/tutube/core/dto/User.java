@@ -25,7 +25,7 @@ public class User implements UserDetails {
     private String lastName;
     private double age;
 
-    private String email;
+    private String userName;
     private String password;
 
     private Double factAge = null;
@@ -40,7 +40,12 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userName;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override

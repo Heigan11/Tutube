@@ -3,6 +3,7 @@ package com.tutube.core.conrollers;
 import com.tutube.core.configuration.JwtUtil;
 import com.tutube.core.dto.User;
 import com.tutube.core.repositories.UserRepository;
+import com.tutube.core.services.interfaces.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,23 +20,24 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @PostMapping("/register")
     public Mono<ResponseEntity<AuthResponse>> register(@RequestBody RegistrationRequest request) {
-        return userRepository.findByEmail(request.getEmail())
+        return userRepository.findByUserName(request.getUserName()) // Меняем email на userName
                 .flatMap(existingUser -> Mono.just(ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new AuthResponse("User already exists", false, null))))
                 .switchIfEmpty(Mono.defer(() -> {
                     User user = new User();
                     user.setFirstName(request.getFirstName());
                     user.setLastName(request.getLastName());
-                    user.setEmail(request.getEmail());
+                    user.setUserName(request.getUserName());
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setAge(request.getAge());
 
                     return userRepository.save(user)
                             .map(savedUser -> {
-                                String token = jwtUtil.generateToken(savedUser.getEmail());
+                                String token = jwtUtil.generateToken(savedUser.getUsername());
                                 return ResponseEntity.status(HttpStatus.CREATED)
                                         .body(new AuthResponse("User registered successfully", true, token));
                             });
@@ -44,10 +46,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponse>> login(@RequestBody LoginRequest request) {
-        return userRepository.findByEmail(request.getEmail())
+        return userRepository.findByUserName(request.getUserName())
                 .flatMap(user -> {
                     if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                        String token = jwtUtil.generateToken(user.getEmail());
+                        String token = jwtUtil.generateToken(user.getUsername());
                         return Mono.just(ResponseEntity.ok(
                                 new AuthResponse("Login successful", true, token)));
                     } else {
@@ -63,14 +65,14 @@ public class AuthController {
     public static class RegistrationRequest {
         private String firstName;
         private String lastName;
-        private String email;
+        private String userName;
         private String password;
         private double age;
     }
 
     @Data
     public static class LoginRequest {
-        private String email;
+        private String userName;
         private String password;
     }
 

@@ -4,6 +4,7 @@ import com.tutube.core.dto.User;
 import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Flux<User> getAllUsers() {
@@ -25,25 +27,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Mono<User> findByUserName(String userName) { // Новый метод
+        return userRepository.findByUserName(userName);
+    }
+
+    @Override
     public Mono<User> createUser(User user) {
         return userRepository.save(user);
     }
 
     @Override
     public Mono<User> updateUser(User user) {
-        return userRepository.findById(user.getId())
+        return userRepository.findByUserName(user.getUsername())
                 .flatMap(existingUser -> {
+                    // Обновляем только разрешенные поля (исключаем email и пароль)
                     if (user.getFirstName() != null) {
                         existingUser.setFirstName(user.getFirstName());
                     }
                     if (user.getLastName() != null) {
                         existingUser.setLastName(user.getLastName());
-                    }
-                    if (user.getEmail() != null) {
-                        existingUser.setEmail(user.getEmail());
-                    }
-                    if (user.getPassword() != null) {
-                        existingUser.setPassword(user.getPassword());
                     }
                     if (user.getAge() != 0.0) {
                         existingUser.setAge(user.getAge());
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
                     if (user.getAttemptsCount() != null) {
                         existingUser.setAttemptsCount(user.getAttemptsCount());
                     }
-
+                    System.out.println("existingUser = " + existingUser);
                     return userRepository.save(existingUser);
                 }).switchIfEmpty(Mono.empty());
     }

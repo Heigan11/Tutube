@@ -29,4 +29,74 @@ curl -X POST http://localhost:8085/api/auth/register \
       "password": "password123"
     }'
 
-curl -X GET http://localhost:8085/api/users -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuQG1haWwucnUiLCJpYXQiOjE3NTY3MzgxMjYsImV4cCI6MTc1NjgyNDUyNn0.iwlh_H-QtwrMJAJ75aoIpHIAaY6adytN7aY2x1uzbWcsOwqWGoh_IT4YOqji5IkM"
+curl -X GET http://localhost:8085/api/users -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuQG1haWwucnUiLCJpYXQiOjE3NTY3NTA2OTksImV4cCI6MTc1NjgzNzA5OX0.hcC_rOhzPu00NNsNl78jdldti8DVqJbnpbeKHGmJQMo6is2stu0SJW_mgn784Qet"
+
+curl -X PUT http://localhost:8085/api/users \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuQG1haWwucnUiLCJpYXQiOjE3NTY3NTU2NDIsImV4cCI6MTc1Njg0MjA0Mn0.88AjtBkiCAeD2FGbhGFkruINsQuilhgM5D7OFkT7HxrUCl6iLdvItpWyCEwxaVaf" \
+  -d '{
+    "id": 1,
+    "firstName": "Иван",
+    "lastName": "Иванов",
+    "email": "ivan@mail.ru",
+    "age": 26.5,
+    "attemptsCount": 10
+  }'
+
+curl -X POST http://localhost:8085/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Иван",
+    "lastName": "Иванов",
+    "userName": "ivan@mail",
+    "password": "password123",
+    "age": 25.5
+  }'
+
+  curl -X POST http://localhost:8085/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{
+      "userName": "ivan@mail.ru",
+      "password": "password123"
+    }'
+
+    curl -X PUT http://localhost:8085/api/users \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0X3VzZXIiLCJpYXQiOjE3NTY3NTQyMDMsImV5cCI6MTc1Njg0MDYwM30.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" \
+      -d '{
+        "id": 1,
+        "firstName": "Иван",
+        "lastName": "Иванов",
+        "email": "ivan@mail",
+        "age": 26.5,
+        "attemptsCount": 15
+      }'
+
+      curl -X POST http://localhost:8085/api/auth/register \
+        -H "Content-Type: application/json" \
+        -d '{
+          "firstName": "Иыфван",
+          "lastName": "Ивафывнов",
+          "userName": "aaaaaa",
+          "password": "password1234",
+          "age": 25.5
+        }'
+
+        curl -X POST http://localhost:8085/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{
+              "userName": "aaaaaa",
+              "password": "password1234"
+            }'
+
+
+    curl -X PUT http://localhost:8085/api/users \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhYWFhYWEiLCJpYXQiOjE3NTY3NjI4MzcsImV4cCI6MTc1Njg0OTIzN30.MR5XVE3ejEtSuiPFJ1_42how1FFj9fiWmu3YhapYwPSEil0KRJBAQ5ZaPLc9cNr5" \
+      -d '{
+        "firstName": "Иван",
+        "lastName": "Иванов",
+        "userName": "ivan@mail",
+        "age": 26.5,
+        "attemptsCount": 15
+      }'
