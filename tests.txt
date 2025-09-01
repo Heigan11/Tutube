@@ -10,3 +10,23 @@ curl -X POST http://localhost:8085/api/users \
 
 curl -X GET http://localhost:8085/api/users/1 \
   -H "Accept: application/json"
+
+
+curl -X POST http://localhost:8085/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Иван",
+    "lastName": "Иванов",
+    "email": "ivan@mail.ru",
+    "password": "password123",
+    "age": 25.5
+  }'
+
+  curl -X POST http://localhost:8085/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{
+      "email": "ivan@mail.ru",
+      "password": "password123"
+    }'
+
+curl -X GET http://localhost:8085/api/users -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuQG1haWwucnUiLCJpYXQiOjE3NTY3MzgxMjYsImV4cCI6MTc1NjgyNDUyNn0.iwlh_H-QtwrMJAJ75aoIpHIAaY6adytN7aY2x1uzbWcsOwqWGoh_IT4YOqji5IkM"
