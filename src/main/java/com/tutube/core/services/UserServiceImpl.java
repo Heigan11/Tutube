@@ -39,6 +39,12 @@ public class UserServiceImpl implements UserService {
                     if (user.getLastName() != null) {
                         existingUser.setLastName(user.getLastName());
                     }
+                    if (user.getEmail() != null) {
+                        existingUser.setEmail(user.getEmail());
+                    }
+                    if (user.getPassword() != null) {
+                        existingUser.setPassword(user.getPassword());
+                    }
                     if (user.getAge() != 0.0) {
                         existingUser.setAge(user.getAge());
                     }

@@ -21,6 +21,9 @@ public class User {
     private String lastName;
     private double age;
 
+    private String email;
+    private String password;
+
     private Double factAge = null;
     private int level = 1;
     private Double successRate = 0.0;
