@@ -29,11 +29,8 @@ public class AuthController {
                         .body(new AuthResponse("User already exists", false, null))))
                 .switchIfEmpty(Mono.defer(() -> {
                     User user = new User();
-                    user.setFirstName(request.getFirstName());
-                    user.setLastName(request.getLastName());
                     user.setUserName(request.getUserName());
                     user.setPassword(passwordEncoder.encode(request.getPassword()));
-                    user.setAge(request.getAge());
 
                     return userRepository.save(user)
                             .map(savedUser -> {
@@ -63,11 +60,8 @@ public class AuthController {
 
     @Data
     public static class RegistrationRequest {
-        private String firstName;
-        private String lastName;
         private String userName;
         private String password;
-        private double age;
     }
 
     @Data

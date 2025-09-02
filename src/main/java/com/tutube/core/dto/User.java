@@ -21,17 +21,23 @@ public class User implements UserDetails {
     @Id
     private Long id;
 
-    private String firstName;
-    private String lastName;
-    private double age;
-
     private String userName;
     private String password;
 
-    private Double factAge = null;
+    private String firstName;
+    private String lastName;
+    private Double age;
+    private Double factAge;
+
     private int level = 1;
     private Double successRate = 0.0;
     private Integer attemptsCount = 0;
+
+    // Конструктор для регистрации
+    public User(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
