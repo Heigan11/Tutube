@@ -4,7 +4,6 @@ import com.tutube.core.dto.User;
 import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,7 +13,6 @@ import reactor.core.publisher.Mono;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Flux<User> getAllUsers() {
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
                     if (user.getLastName() != null) {
                         existingUser.setLastName(user.getLastName());
                     }
-                    if (user.getAge() != 0.0) {
+                    if (user.getAge() != null) {
                         existingUser.setAge(user.getAge());
                     }
                     if (user.getFactAge() != null) {
@@ -62,7 +60,6 @@ public class UserServiceImpl implements UserService {
                     if (user.getAttemptsCount() != null) {
                         existingUser.setAttemptsCount(user.getAttemptsCount());
                     }
-                    System.out.println("existingUser = " + existingUser);
                     return userRepository.save(existingUser);
                 }).switchIfEmpty(Mono.empty());
     }
