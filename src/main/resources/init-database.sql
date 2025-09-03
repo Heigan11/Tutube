@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+    birth_date DATE,
     age DOUBLE,
     fact_age DOUBLE,
     level INT DEFAULT 1,

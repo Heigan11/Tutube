@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
+import static com.tutube.core.utils.Utils.calculateExactAge;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +19,7 @@ public class UserDto {
     private String userName;
     private String firstName;
     private String lastName;
+    private LocalDate birthDate;
     private Double age;
     private Double factAge;
     private int level;
@@ -26,7 +31,8 @@ public class UserDto {
                 .userName(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .age(user.getAge())
+                .birthDate(user.getBirthDate())
+                .age(calculateExactAge(user.getBirthDate()))
                 .factAge(user.getFactAge())
                 .level(user.getLevel())
                 .successRate(user.getSuccessRate())

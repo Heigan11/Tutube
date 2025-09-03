@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import static com.tutube.core.utils.Utils.calculateExactAge;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -28,6 +30,10 @@ public class UserServiceImpl implements UserService {
                     }
                     if (user.getLastName() != null) {
                         existingUser.setLastName(user.getLastName());
+                    }
+                    if (user.getBirthDate() != null) {
+                        existingUser.setBirthDate(user.getBirthDate());
+                        existingUser.setAge(calculateExactAge(user.getBirthDate()));
                     }
                     if (user.getAge() != null) {
                         existingUser.setAge(user.getAge());
