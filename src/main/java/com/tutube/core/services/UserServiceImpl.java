@@ -5,7 +5,6 @@ import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -15,23 +14,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Flux<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public Mono<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    @Override
-    public Mono<User> findByUserName(String userName) { // Новый метод
+    public Mono<User> getUserByUserName(String userName) {
         return userRepository.findByUserName(userName);
-    }
-
-    @Override
-    public Mono<User> createUser(User user) {
-        return userRepository.save(user);
     }
 
     @Override

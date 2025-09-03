@@ -2,16 +2,16 @@ package com.tutube.core.conrollers;
 
 
 import com.tutube.core.dto.User;
+import com.tutube.core.dto.UserDto;
 import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -22,25 +22,16 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    // Получить всех пользователей
-    @GetMapping
-    public Flux<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
+    @GetMapping("/{userName}")
+    public Mono<ResponseEntity<UserDto>> getUserByUserName(
+            @PathVariable String userName,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    // Получить пользователя по ID
-    @GetMapping("/{id}")
-    public Mono<ResponseEntity<User>> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    // Создать нового пользователя
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<User> createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        return userService.getUserByUserName(userName)
+                .filter(user -> user.getUsername().equals(userDetails.getUsername()))
+                .map(user -> ResponseEntity.ok(UserDto.convertToUserDto(user)))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.FORBIDDEN).build())
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
 
@@ -73,9 +64,8 @@ public class UserController {
                         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
                     }
                     return userService.updateUser(user)
-                            .map(ResponseEntity::ok);
+                            .map(updatedUser -> ResponseEntity.ok(UserDto.convertToUserDto(updatedUser)));
                 })
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
-
 }
