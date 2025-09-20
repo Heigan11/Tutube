@@ -25,7 +25,7 @@ public class SecurityErrorHandler {
 
         ApiResponse<?> apiResponse = ApiResponse.error(
                 "Authentication failed: Invalid or missing token",
-                ACCESS_DENIED
+                INVALID_TOKEN
         );
 
         return writeResponse(exchange, apiResponse);

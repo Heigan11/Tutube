@@ -1,11 +1,11 @@
 http://localhost:8082/
 
-scp core-0.0.1-SNAPSHOT.jar heigan@84.201.150.195:~
-ssh heigan@84.201.150.195
+scp core-0.0.1-SNAPSHOT.jar heigan@51.250.43.116:~
+ssh heigan@51.250.43.116
 rm -rf db
 sudo systemctl restart myapp
 
-curl -X POST http://localhost:8085/api/auth/register \
+curl -X POST http://51.250.43.116:8085/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "userName": "ivan_ivanov",

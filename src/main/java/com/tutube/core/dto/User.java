@@ -1,5 +1,7 @@
 package com.tutube.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,11 +19,13 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table("users")
+
 public class User implements UserDetails {
 
     @Id
     private Long id;
 
+    @JsonProperty("userName")
     private String userName;
     private String password;
 
@@ -41,6 +45,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
