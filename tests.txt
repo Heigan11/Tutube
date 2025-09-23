@@ -1,5 +1,40 @@
 http://localhost:8082/
 
+scp core-0.0.1-SNAPSHOT.jar heigan@51.250.43.116:~
+ssh heigan@51.250.43.116
+rm -rf db
+sudo systemctl restart myapp
+
+curl -X POST http://51.250.43.116:8085/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userName": "ivan_ivanov",
+    "password": "password123"
+  }'
+
+  curl -X POST http://localhost:8085/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{
+      "userName": "ivan_ivanov",
+      "password": "password123"
+    }'
+
+    curl -X GET http://localhost:8085/api/users/ivan_ivanov \
+      -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuX2l2YW5vdiIsImlhdCI6MTc1NjkyNDQyMywiZXhwIjoxNzU3MDEwODIzfQ.Eqw3hcGZGgDxrE1KAgOL_Jt5InKCV85Fd4b0nGFnY7MAi9svx-D78tOrU23TyvFE" \
+      -H "Accept: application/json"
+
+
+    curl -X PUT http://localhost:8085/api/users \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJpdmFuX2l2YW5vdiIsImlhdCI6MTc1NjkyNDQyMywiZXhwIjoxNzU3MDEwODIzfQ.Eqw3hcGZGgDxrE1KAgOL_Jt5InKCV85Fd4b0nGFnY7MAi9svx-D78tOrU23TyvFE" \
+      -d '{
+        "firstName": "Иван",
+        "lastName": "Иванов",
+        "userName": "ivan_ivanov",
+        "birthDate": "1990-05-06",
+        "attemptsCount": 17
+      }'
+
 =====ЗАДАЧИ+++++
 
 1. Прописываем контракты

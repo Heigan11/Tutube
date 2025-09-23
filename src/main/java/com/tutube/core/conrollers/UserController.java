@@ -1,52 +1,49 @@
 package com.tutube.core.conrollers;
 
 
+import com.tutube.core.dto.ApiResponse;
 import com.tutube.core.dto.User;
+import com.tutube.core.dto.UserDto;
 import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static com.tutube.core.utils.ErrorTypes.*;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    // Получить всех пользователей
-    @GetMapping
-    public Flux<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
+    @GetMapping("/{userName}")
+    public Mono<ResponseEntity<ApiResponse<UserDto>>> getUserByUserName(
+            @PathVariable String userName,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    // Получить пользователя по ID
-    @GetMapping("/{id}")
-    public Mono<ResponseEntity<User>> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    // Создать нового пользователя
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<User> createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        return userService.getUserByUserName(userName)
+                .filter(user -> user.getUsername().equals(userDetails.getUsername()))
+                .map(UserDto::convertToUserDto)
+                .map(userDto -> ResponseEntity.ok(ApiResponse.success("User found", userDto)))
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ApiResponse.error("Access denied", ACCESS_DENIED))));
     }
 
 
     // Обновить пользователя (ID берется из тела запроса)
 //    @PutMapping
-////    @PreAuthorize("hasRole('USER') and #user.email == authentication.name")
+
+    /// /    @PreAuthorize("hasRole('USER') and #user.email == authentication.name")
 //    @PreAuthorize("#user.email == authentication.name")
 //    public Mono<ResponseEntity<User>> updateUser(@RequestBody User user) {
 //        if (user.getId() == null) {
@@ -58,24 +55,34 @@ public class UserController {
 //    }
 
     @PutMapping
-    public Mono<ResponseEntity<?>> updateUser(
+    public Mono<ResponseEntity<ApiResponse<UserDto>>> updateUser(
             @RequestBody User user,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         if (user.getUsername() == null) {
-            return Mono.just(ResponseEntity.badRequest().build());
+            return Mono.just(ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Username is required", VALIDATION_ERROR)));
         }
 
-        // Проверяем, что пользователь обновляет свои данные
         return userRepository.findByUserName(user.getUsername())
+                .switchIfEmpty(Mono.error(new RuntimeException("Access denied")))
                 .flatMap(existingUser -> {
                     if (!existingUser.getUsername().equals(userDetails.getUsername())) {
-                        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+                        return Mono.error(new RuntimeException("Access denied"));
                     }
-                    return userService.updateUser(user)
-                            .map(ResponseEntity::ok);
+                    return userService.updateUser(user);
                 })
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .map(UserDto::convertToUserDto)
+                .map(updatedUser -> ResponseEntity.ok(
+                        ApiResponse.success("User updated successfully", updatedUser)))
+                .onErrorResume(error -> {
+                    if (error.getMessage().equals("Access denied")) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(ApiResponse.error("Access denied", ACCESS_DENIED)));
+                    } else {
+                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(ApiResponse.error("Update failed", INTERNAL_ERROR)));
+                    }
+                });
     }
-
 }

@@ -1,5 +1,7 @@
 package com.tutube.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,16 +19,19 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table("users")
+
 public class User implements UserDetails {
 
     @Id
     private Long id;
 
+    @JsonProperty("userName")
     private String userName;
     private String password;
 
     private String firstName;
     private String lastName;
+    private LocalDate birthDate;
     private Double age;
     private Double factAge;
 
@@ -39,6 +45,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
