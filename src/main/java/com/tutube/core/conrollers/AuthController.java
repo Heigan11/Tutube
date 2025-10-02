@@ -1,10 +1,9 @@
 package com.tutube.core.conrollers;
 
 import com.tutube.core.configuration.JwtUtil;
-import com.tutube.core.dto.ApiResponse;
-import com.tutube.core.dto.User;
-import com.tutube.core.dto.UserDto;
+import com.tutube.core.dto.*;
 import com.tutube.core.repositories.UserRepository;
+import com.tutube.core.services.interfaces.EmailVerificationService;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,40 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
+    private final EmailVerificationService emailVerificationService;
+
     @PostMapping("/register")
-    public Mono<ResponseEntity<ApiResponse<UserDto>>> register(@RequestBody RegistrationRequest request) {
+    public Mono<ResponseEntity<ApiResponse<Void>>> register(@RequestBody RegistrationRequest request) {
+        // 1. Проверяем валидность email
+        if (!isValidEmail(request.getUserName())) {
+            return Mono.just(ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Invalid email format", VALIDATION_ERROR)));
+        }
+
+        // 2. Проверяем существование пользователя
         return userRepository.findByUserName(request.getUserName())
                 .flatMap(existingUser -> Mono.just(ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(ApiResponse.<UserDto>error("User already exists", USER_ALREADY_EXISTS))))
-                .switchIfEmpty(Mono.defer(() -> {
-                    User user = new User(request.getUserName(), passwordEncoder.encode(request.getPassword()));
+                        .body(ApiResponse.<Void>error("User already exists", USER_ALREADY_EXISTS))))
+                .switchIfEmpty(Mono.<ResponseEntity<ApiResponse<Void>>>defer(() ->
+                        emailVerificationService.generateAndSendVerificationCode(request.getUserName())
+                                .map(code -> ResponseEntity.ok()
+                                        .body(ApiResponse.<Void>success("Verification code sent to email", null)))
+                                .onErrorResume(error -> Mono.just(ResponseEntity.badRequest()
+                                        .body(ApiResponse.<Void>error(error.getMessage(), VALIDATION_ERROR))))
+                ));
+    }
 
+    @PostMapping("/verify")
+    public Mono<ResponseEntity<ApiResponse<UserDto>>> verifyEmail(@RequestBody EmailVerificationRequest request) {
+        return emailVerificationService.verifyCode(request.getEmail(), request.getCode())
+                .flatMap(isValid -> {
+                    if (!isValid) {
+                        return Mono.just(ResponseEntity.badRequest()
+                                .body(ApiResponse.error("Invalid or expired code", VALIDATION_ERROR)));
+                    }
+
+                    // Создаем пользователя после успешной верификации
+                    User user = new User(request.getEmail(), passwordEncoder.encode(request.getCode()));
                     return userRepository.save(user)
                             .map(savedUser -> {
                                 String token = jwtUtil.generateToken(savedUser.getUsername());
@@ -41,8 +66,9 @@ public class AuthController {
                                 return ResponseEntity.status(HttpStatus.CREATED)
                                         .body(ApiResponse.success("User registered successfully", userDto, token));
                             });
-                }));
+                });
     }
+
 
     @PostMapping("/login")
     public Mono<ResponseEntity<ApiResponse<UserDto>>> login(@RequestBody LoginRequest request) {
@@ -62,10 +88,9 @@ public class AuthController {
                         .body(ApiResponse.error("Invalid credentials", INVALID_CREDENTIALS))));
     }
 
-    @Data
-    public static class RegistrationRequest {
-        private String userName;
-        private String password;
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email != null && email.matches(emailRegex);
     }
 
     @Data

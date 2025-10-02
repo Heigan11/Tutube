@@ -4,6 +4,7 @@ import com.tutube.core.dto.User;
 import com.tutube.core.repositories.UserRepository;
 import com.tutube.core.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,7 @@ import static com.tutube.core.utils.Utils.calculateExactAge;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Mono<User> getUserByUserName(String userName) {
@@ -24,7 +26,10 @@ public class UserServiceImpl implements UserService {
     public Mono<User> updateUser(User user) {
         return userRepository.findByUserName(user.getUsername())
                 .flatMap(existingUser -> {
-                    // Обновляем только разрешенные поля (исключаем email и пароль)
+                    // Обновляем только разрешенные поля (исключаем email)
+                    if (user.getPassword() != null) {
+                        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                    }
                     if (user.getFirstName() != null) {
                         existingUser.setFirstName(user.getFirstName());
                     }

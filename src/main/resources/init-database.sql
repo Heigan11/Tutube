@@ -21,5 +21,5 @@ CREATE TABLE IF NOT EXISTS email_verification_codes (
     used BOOLEAN DEFAULT FALSE
 );
 
-CREATE INDEX idx_email_verification_codes_email ON email_verification_codes(email);
-CREATE INDEX idx_email_verification_codes_created_at ON email_verification_codes(created_at);
+CREATE INDEX IF NOT EXISTS idx_email_verification_codes_email ON email_verification_codes(email);
+CREATE INDEX IF NOT EXISTS idx_email_verification_codes_created_at ON email_verification_codes(created_at);

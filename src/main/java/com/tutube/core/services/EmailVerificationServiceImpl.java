@@ -6,8 +6,10 @@ import com.tutube.core.services.interfaces.EmailVerificationService;
 import freemarker.template.TemplateException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,7 +29,7 @@ import freemarker.template.Template;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @AllArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
@@ -41,6 +43,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     @Value("${app.email.verification.resend-timeout-minutes:3}")
     private int resendTimeoutMinutes;
+
+    @Autowired
+    public EmailVerificationServiceImpl(EmailVerificationCodeRepository codeRepository,
+                                        JavaMailSender mailSender,
+                                        Configuration freeMarkerConfig) {
+        this.codeRepository = codeRepository;
+        this.mailSender = mailSender;
+        this.freeMarkerConfig = freeMarkerConfig;
+    }
 
     @Override
     public Mono<String> generateAndSendVerificationCode(String email) {
