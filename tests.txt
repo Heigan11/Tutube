@@ -1,15 +1,21 @@
 http://localhost:8082/
 
-scp core-0.0.1-SNAPSHOT.jar heigan@51.250.43.116:~
-ssh heigan@51.250.43.116
+scp core-0.0.1-SNAPSHOT.jar heigan@51.250.38.89:~
+ssh heigan@51.250.38.89
 rm -rf db
 sudo systemctl restart myapp
 
-curl -X POST http://localhost:8085/api/auth/register \
+curl -X POST http://51.250.38.89:8085/api/auth/register \
       -H "Content-Type: application/json" \
       -d '{
         "userName": "heigan11@gmail.com"
       }'
+
+      curl -X POST http://localhost:8085/api/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{
+              "userName": "heigan11@gmail.com"
+            }'
 
 curl -X POST http://localhost:8085/api/auth/verify \
   -H "Content-Type: application/json" \
