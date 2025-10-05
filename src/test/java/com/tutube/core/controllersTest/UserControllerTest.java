@@ -1,7 +1,7 @@
 package com.tutube.core.controllersTest;
 
 import com.tutube.core.conrollers.UserController;
-import com.tutube.core.dto.ApiResponse;
+import com.tutube.core.dto.ApiResponseTutube;
 import com.tutube.core.dto.UserDto;
 import com.tutube.core.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class UserControllerIntegrationTest {
 
         // when
         log.info("2. Вызываем контроллер с реальными данными из БД");
-        Mono<ResponseEntity<ApiResponse<UserDto>>> result = userController
+        Mono<ResponseEntity<ApiResponseTutube<UserDto>>> result = userController
                 .getUserByUserName(userName, userDetails);
 
         // then
@@ -100,7 +100,7 @@ class UserControllerIntegrationTest {
         // when
         log.info("3. Вызываем контроллер - пользователь {} пытается получить данные {}",
                 currentUserName, existingUserName);
-        Mono<ResponseEntity<ApiResponse<UserDto>>> result = userController
+        Mono<ResponseEntity<ApiResponseTutube<UserDto>>> result = userController
                 .getUserByUserName(existingUserName, currentUserDetails);
 
         // then
@@ -135,7 +135,7 @@ class UserControllerIntegrationTest {
 
         // when
         log.info("2. Вызываем контроллер для несуществующего пользователя: {}", nonExistentUserName);
-        Mono<ResponseEntity<ApiResponse<UserDto>>> result = userController
+        Mono<ResponseEntity<ApiResponseTutube<UserDto>>> result = userController
                 .getUserByUserName(nonExistentUserName, userDetails);
 
         // then
@@ -160,7 +160,7 @@ class UserControllerIntegrationTest {
         String userName = "testUser";
 
         log.info("1. Вызываем контроллер с null userDetails");
-        Mono<ResponseEntity<ApiResponse<UserDto>>> result = userController
+        Mono<ResponseEntity<ApiResponseTutube<UserDto>>> result = userController
                 .getUserByUserName(userName, null);
 
         // when & then

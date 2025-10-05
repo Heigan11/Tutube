@@ -1,6 +1,6 @@
 package com.tutube.core.controllersTest;
 
-import com.tutube.core.dto.ApiResponse;
+import com.tutube.core.dto.ApiResponseTutube;
 import com.tutube.core.dto.User;
 import com.tutube.core.dto.UserDto;
 import com.tutube.core.repositories.UserRepository;
@@ -93,17 +93,17 @@ class UserControllerUpdateTest {
                 .headers(headers -> headers.setBasicAuth("testUser", "password"))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 200 OK");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isTrue();
-                    assertThat(apiResponse.getMessage()).isEqualTo("User updated successfully");
-                    assertThat(apiResponse.getData().getFirstName()).isEqualTo("Updated");
-                    assertThat(apiResponse.getData().getLastName()).isEqualTo("User");
-                    assertThat(apiResponse.getData().getLevel()).isEqualTo(2);
-                    log.info("4. Пользователь успешно обновлен: {}", apiResponse.getData());
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isTrue();
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("User updated successfully");
+                    assertThat(apiResponseTutube.getData().getFirstName()).isEqualTo("Updated");
+                    assertThat(apiResponseTutube.getData().getLastName()).isEqualTo("User");
+                    assertThat(apiResponseTutube.getData().getLevel()).isEqualTo(2);
+                    log.info("4. Пользователь успешно обновлен: {}", apiResponseTutube.getData());
                 });
 
         log.info("5. Проверяем обновление в БД");
@@ -140,14 +140,14 @@ class UserControllerUpdateTest {
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().isForbidden()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 403 Forbidden");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo("ACCESS_DENIED");
-                    assertThat(apiResponse.getMessage()).isEqualTo("Access denied");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo("ACCESS_DENIED");
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Access denied");
                     log.info("4. Доступ запрещен - тест пройден");
                 });
 
@@ -173,14 +173,14 @@ class UserControllerUpdateTest {
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 400 Bad Request");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo("VALIDATION_ERROR");
-                    assertThat(apiResponse.getMessage()).isEqualTo("Username is required");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo("VALIDATION_ERROR");
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Username is required");
                     log.info("4. Ошибка валидации - тест пройден");
                 });
 
@@ -207,13 +207,13 @@ class UserControllerUpdateTest {
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().isForbidden()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 403 Forbidden");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo("ACCESS_DENIED");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo("ACCESS_DENIED");
                     log.info("4. Пользователь не найден - тест пройден");
                 });
 
@@ -243,14 +243,14 @@ class UserControllerUpdateTest {
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().is5xxServerError()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 500 Internal Server Error");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo("INTERNAL_ERROR");
-                    assertThat(apiResponse.getMessage()).isEqualTo("Update failed");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo("INTERNAL_ERROR");
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Update failed");
                     log.info("4. Внутренняя ошибка - тест пройден");
                 });
 

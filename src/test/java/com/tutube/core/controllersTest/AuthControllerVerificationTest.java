@@ -1,6 +1,6 @@
 package com.tutube.core.controllersTest;
 
-import com.tutube.core.dto.ApiResponse;
+import com.tutube.core.dto.ApiResponseTutube;
 import com.tutube.core.dto.EmailVerificationRequest;
 import com.tutube.core.dto.RegistrationRequest;
 import com.tutube.core.dto.UserDto;
@@ -82,15 +82,15 @@ public class AuthControllerVerificationTest {
                 .bodyValue(verifyRequest)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("5. Статус ответа: 201 Created");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isTrue();
-                    assertThat(apiResponse.getMessage()).isEqualTo("User registered successfully");
-                    assertThat(apiResponse.getData().getUserName()).isEqualTo(newEmail);
-                    assertThat(apiResponse.getToken()).isNotNull();
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isTrue();
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("User registered successfully");
+                    assertThat(apiResponseTutube.getData().getUserName()).isEqualTo(newEmail);
+                    assertThat(apiResponseTutube.getToken()).isNotNull();
                     log.info("6. Пользователь успешно создан - тест пройден");
                 });
 
@@ -148,14 +148,14 @@ public class AuthControllerVerificationTest {
                 .bodyValue(verifyRequest)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 400 Bad Request");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo(VALIDATION_ERROR);
-                    assertThat(apiResponse.getMessage()).isEqualTo("Invalid or expired code");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(VALIDATION_ERROR);
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Invalid or expired code");
                     log.info("4. Неверный код отклонен - тест пройден");
                 });
 
@@ -197,14 +197,14 @@ public class AuthControllerVerificationTest {
                 .bodyValue(verifyRequest)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 400 Bad Request");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo(VALIDATION_ERROR);
-                    assertThat(apiResponse.getMessage()).isEqualTo("Invalid or expired code");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(VALIDATION_ERROR);
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Invalid or expired code");
                     log.info("4. Просроченный код отклонен - тест пройден");
                 });
 
@@ -245,14 +245,14 @@ public class AuthControllerVerificationTest {
                 .bodyValue(verifyRequest)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<UserDto>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 400 Bad Request");
-                    ApiResponse<UserDto> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo(VALIDATION_ERROR);
-                    assertThat(apiResponse.getMessage()).isEqualTo("Invalid or expired code");
+                    ApiResponseTutube<UserDto> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(VALIDATION_ERROR);
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Invalid or expired code");
                     log.info("4. Использованный код отклонен - тест пройден");
                 });
 

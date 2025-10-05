@@ -28,33 +28,33 @@ public class AuthController {
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<ApiResponse<Void>>> register(@RequestBody RegistrationRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<Void>>> register(@RequestBody RegistrationRequest request) {
         // 1. Проверяем валидность email
         if (!isValidEmail(request.getUserName())) {
             return Mono.just(ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Invalid email format", VALIDATION_ERROR)));
+                    .body(ApiResponseTutube.error("Invalid email format", VALIDATION_ERROR)));
         }
 
         // 2. Проверяем существование пользователя
         return userRepository.findByUserName(request.getUserName())
                 .flatMap(existingUser -> Mono.just(ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(ApiResponse.<Void>error("User already exists", USER_ALREADY_EXISTS))))
-                .switchIfEmpty(Mono.<ResponseEntity<ApiResponse<Void>>>defer(() ->
+                        .body(ApiResponseTutube.<Void>error("User already exists", USER_ALREADY_EXISTS))))
+                .switchIfEmpty(Mono.<ResponseEntity<ApiResponseTutube<Void>>>defer(() ->
                         emailVerificationService.generateAndSendVerificationCode(request.getUserName())
                                 .map(code -> ResponseEntity.ok()
-                                        .body(ApiResponse.<Void>success("Verification code sent to email", null)))
+                                        .body(ApiResponseTutube.<Void>success("Verification code sent to email", null)))
                                 .onErrorResume(error -> Mono.just(ResponseEntity.badRequest()
-                                        .body(ApiResponse.<Void>error(error.getMessage(), VALIDATION_ERROR))))
+                                        .body(ApiResponseTutube.<Void>error(error.getMessage(), VALIDATION_ERROR))))
                 ));
     }
 
     @PostMapping("/verify")
-    public Mono<ResponseEntity<ApiResponse<UserDto>>> verifyEmail(@RequestBody EmailVerificationRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> verifyEmail(@RequestBody EmailVerificationRequest request) {
         return emailVerificationService.verifyCode(request.getEmail(), request.getCode())
                 .flatMap(isValid -> {
                     if (!isValid) {
                         return Mono.just(ResponseEntity.badRequest()
-                                .body(ApiResponse.error("Invalid or expired code", VALIDATION_ERROR)));
+                                .body(ApiResponseTutube.error("Invalid or expired code", VALIDATION_ERROR)));
                     }
 
                     // Создаем пользователя после успешной верификации
@@ -64,28 +64,28 @@ public class AuthController {
                                 String token = jwtUtil.generateToken(savedUser.getUsername());
                                 UserDto userDto = UserDto.convertToUserDto(savedUser);
                                 return ResponseEntity.status(HttpStatus.CREATED)
-                                        .body(ApiResponse.success("User registered successfully", userDto, token));
+                                        .body(ApiResponseTutube.success("User registered successfully", userDto, token));
                             });
                 });
     }
 
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<ApiResponse<UserDto>>> login(@RequestBody LoginRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> login(@RequestBody LoginRequest request) {
         return userRepository.findByUserName(request.getUserName())
                 .flatMap(user -> {
                     if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                         String token = jwtUtil.generateToken(user.getUsername());
                         UserDto userDto = UserDto.convertToUserDto(user);
                         return Mono.just(ResponseEntity.ok(
-                                ApiResponse.success("Login successful", userDto, token)));
+                                ApiResponseTutube.success("Login successful", userDto, token)));
                     } else {
                         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body(ApiResponse.<UserDto>error("Invalid credentials", INVALID_CREDENTIALS)));
+                                .body(ApiResponseTutube.<UserDto>error("Invalid credentials", INVALID_CREDENTIALS)));
                     }
                 })
                 .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(ApiResponse.error("Invalid credentials", INVALID_CREDENTIALS))));
+                        .body(ApiResponseTutube.error("Invalid credentials", INVALID_CREDENTIALS))));
     }
 
     private boolean isValidEmail(String email) {

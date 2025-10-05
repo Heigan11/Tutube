@@ -1,6 +1,6 @@
 package com.tutube.core.controllersTest;
 
-import com.tutube.core.dto.ApiResponse;
+import com.tutube.core.dto.ApiResponseTutube;
 import com.tutube.core.dto.RegistrationRequest;
 import com.tutube.core.repositories.EmailVerificationCodeRepository;
 import com.tutube.core.repositories.UserRepository;
@@ -59,13 +59,13 @@ class AuthControllerTest {
                 .bodyValue(registerRequest)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<Void>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<Void>>() {})
                 .consumeWith(response -> {
                     log.info("4. Статус ответа: 200 OK");
-                    ApiResponse<Void> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isTrue();
-                    assertThat(apiResponse.getMessage()).isEqualTo("Verification code sent to email");
+                    ApiResponseTutube<Void> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isTrue();
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("Verification code sent to email");
                     log.info("5. Код подтверждения отправлен - тест пройден");
                 });
 
@@ -116,14 +116,14 @@ class AuthControllerTest {
                 .bodyValue(registerRequest)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
-                .expectBody(new ParameterizedTypeReference<ApiResponse<Void>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<Void>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 409 Conflict");
-                    ApiResponse<Void> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo(USER_ALREADY_EXISTS);
-                    assertThat(apiResponse.getMessage()).isEqualTo("User already exists");
+                    ApiResponseTutube<Void> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(USER_ALREADY_EXISTS);
+                    assertThat(apiResponseTutube.getMessage()).isEqualTo("User already exists");
                     log.info("4. Пользователь уже существует - тест пройден");
                 });
 
@@ -147,13 +147,13 @@ class AuthControllerTest {
                 .bodyValue(registerRequest)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(new ParameterizedTypeReference<ApiResponse<Void>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<Void>>() {})
                 .consumeWith(response -> {
                     log.info("2. Статус ответа: 400 Bad Request");
-                    ApiResponse<Void> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getErrorType()).isEqualTo(VALIDATION_ERROR);
+                    ApiResponseTutube<Void> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(VALIDATION_ERROR);
                     log.info("3. Некорректный email - тест пройден");
                 });
 
@@ -184,14 +184,14 @@ class AuthControllerTest {
                 .bodyValue(registerRequest)
                 .exchange()
                 .expectStatus().isBadRequest() // или тот статус, который возвращает твой сервис
-                .expectBody(new ParameterizedTypeReference<ApiResponse<Void>>() {})
+                .expectBody(new ParameterizedTypeReference<ApiResponseTutube<Void>>() {})
                 .consumeWith(response -> {
                     log.info("3. Статус ответа: 400 Bad Request");
-                    ApiResponse<Void> apiResponse = response.getResponseBody();
-                    assertThat(apiResponse).isNotNull();
-                    assertThat(apiResponse.isSuccess()).isFalse();
-                    assertThat(apiResponse.getMessage()).startsWith("Повторная отправка кода возможна только через ");
-                    assertThat(apiResponse.getErrorType()).isEqualTo(VALIDATION_ERROR);
+                    ApiResponseTutube<Void> apiResponseTutube = response.getResponseBody();
+                    assertThat(apiResponseTutube).isNotNull();
+                    assertThat(apiResponseTutube.isSuccess()).isFalse();
+                    assertThat(apiResponseTutube.getMessage()).startsWith("Повторная отправка кода возможна только через ");
+                    assertThat(apiResponseTutube.getErrorType()).isEqualTo(VALIDATION_ERROR);
                     log.info("4. Защита от частых запросов работает - тест пройден");
                 });
 

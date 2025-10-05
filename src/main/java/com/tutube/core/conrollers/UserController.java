@@ -1,7 +1,6 @@
 package com.tutube.core.conrollers;
 
-
-import com.tutube.core.dto.ApiResponse;
+import com.tutube.core.dto.ApiResponseTutube;
 import com.tutube.core.dto.User;
 import com.tutube.core.dto.UserDto;
 import com.tutube.core.repositories.UserRepository;
@@ -15,6 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import static com.tutube.core.utils.ErrorTypes.*;
 
 @RestController
@@ -26,17 +32,24 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    @Operation(summary = "Get user by username", description = "Returns user details by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User found",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+    })
     @GetMapping("/{userName}")
-    public Mono<ResponseEntity<ApiResponse<UserDto>>> getUserByUserName(
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> getUserByUserName(
+            @Parameter(description = "Username of the user", required = true, example = "testUser")
             @PathVariable String userName,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         return userService.getUserByUserName(userName)
                 .filter(user -> user.getUsername().equals(userDetails.getUsername()))
                 .map(UserDto::convertToUserDto)
-                .map(userDto -> ResponseEntity.ok(ApiResponse.success("User found", userDto)))
+                .map(userDto -> ResponseEntity.ok(ApiResponseTutube.success("User found", userDto)))
                 .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(ApiResponse.error("Access denied", ACCESS_DENIED))));
+                        .body(ApiResponseTutube.error("Access denied", ACCESS_DENIED))));
     }
 
 
@@ -55,13 +68,13 @@ public class UserController {
 //    }
 
     @PutMapping
-    public Mono<ResponseEntity<ApiResponse<UserDto>>> updateUser(
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> updateUser(
             @RequestBody User user,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         if (user.getUsername() == null) {
             return Mono.just(ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Username is required", VALIDATION_ERROR)));
+                    .body(ApiResponseTutube.error("Username is required", VALIDATION_ERROR)));
         }
 
         return userRepository.findByUserName(user.getUsername())
@@ -74,14 +87,14 @@ public class UserController {
                 })
                 .map(UserDto::convertToUserDto)
                 .map(updatedUser -> ResponseEntity.ok(
-                        ApiResponse.success("User updated successfully", updatedUser)))
+                        ApiResponseTutube.success("User updated successfully", updatedUser)))
                 .onErrorResume(error -> {
                     if (error.getMessage().equals("Access denied")) {
                         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
-                                .body(ApiResponse.error("Access denied", ACCESS_DENIED)));
+                                .body(ApiResponseTutube.error("Access denied", ACCESS_DENIED)));
                     } else {
                         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(ApiResponse.error("Update failed", INTERNAL_ERROR)));
+                                .body(ApiResponseTutube.error("Update failed", INTERNAL_ERROR)));
                     }
                 });
     }

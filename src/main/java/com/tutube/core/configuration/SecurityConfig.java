@@ -23,7 +23,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final String [] publicRoutes = {"/api/auth/**", "/h2-console/**", "/h2-console", "/context/h2-console"};
+    private final String [] publicRoutes = {"/api/auth/**", "/h2-console/**", "/h2-console", "/context/h2-console",
+            "/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**","/webjars/**","/swagger-resources/**"};
 
 
     private final CustomReactiveUserDetailsService userDetailsService;
