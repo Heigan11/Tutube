@@ -44,6 +44,7 @@ public class TestSecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/api/auth/register", "/api/auth/verify").permitAll()
                         .anyExchange().authenticated()  // ✅ Требуем аутентификацию
                 )
                 .httpBasic(Customizer.withDefaults())  // ✅ Включаем HTTP Basic

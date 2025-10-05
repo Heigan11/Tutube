@@ -11,3 +11,15 @@ CREATE TABLE IF NOT EXISTS users (
     success_rate DOUBLE PRECISION DEFAULT 0.0,
     attempts_count INT DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS email_verification_codes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    code VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verification_codes_email ON email_verification_codes(email);
+CREATE INDEX IF NOT EXISTS idx_email_verification_codes_created_at ON email_verification_codes(created_at);
