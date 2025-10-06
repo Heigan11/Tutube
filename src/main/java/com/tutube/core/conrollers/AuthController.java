@@ -13,6 +13,13 @@ import reactor.core.publisher.Mono;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import static com.tutube.core.utils.ErrorTypes.*;
 
 @RestController
@@ -69,9 +76,18 @@ public class AuthController {
                 });
     }
 
-
+    @Operation(
+            summary = "User login",
+            description = "Authenticate user and return JWT token"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    })
     @PostMapping("/login")
-    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> login(@RequestBody LoginRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> login(
+            @Parameter(description = "Login credentials", required = true)
+            @RequestBody LoginRequest request) {
         return userRepository.findByUserName(request.getUserName())
                 .flatMap(user -> {
                     if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -93,9 +109,13 @@ public class AuthController {
         return email != null && email.matches(emailRegex);
     }
 
+    @Schema(description = "Login request")
     @Data
     public static class LoginRequest {
+        @Schema(description = "Username (email)", example = "testUser@test.com", required = true)
         private String userName;
+
+        @Schema(description = "Password", example = "123456", required = true)
         private String password;
     }
 }

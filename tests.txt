@@ -5,6 +5,9 @@ ssh heigan@51.250.38.89
 rm -rf db
 sudo systemctl restart myapp
 
+123456
+$2a$10$B4g6ADFynZyeFhUCAAWXS.d52Qkx1dhqhDze4fAgRozLV/i1cRfMO
+
 curl -X POST http://51.250.38.89:8085/api/auth/register \
       -H "Content-Type: application/json" \
       -d '{

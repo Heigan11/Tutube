@@ -29,6 +29,7 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("init-database.sql"));
+        populator.addScript(new ClassPathResource("init-data.sql"));
 
         initializer.setDatabasePopulator(populator);
         initializer.afterPropertiesSet();

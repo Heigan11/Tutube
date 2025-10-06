@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-src/main/java/com/tutube/core/configuration/H2.java
+#src/main/java/com/tutube/core/configuration/H2.java
 src/main/resources/application.properties
 
 ### STS ###
