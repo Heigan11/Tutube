@@ -70,8 +70,19 @@ public class UserController {
 //                .defaultIfEmpty(ResponseEntity.notFound().build());
 //    }
 
+    @Operation(
+            summary = "Update user profile",
+            description = "Update user information. User can only update their own profile. Requires authentication."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation error - username is required"),
+            @ApiResponse(responseCode = "403", description = "Access denied - cannot update other user's data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error - update failed")
+    })
     @PutMapping
     public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> updateUser(
+            @Parameter(description = "User data to update", required = true)
             @RequestBody User user,
             @AuthenticationPrincipal UserDetails userDetails) {
 

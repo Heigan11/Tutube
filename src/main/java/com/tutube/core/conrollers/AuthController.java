@@ -34,8 +34,19 @@ public class AuthController {
 
     private final EmailVerificationService emailVerificationService;
 
+    @Operation(
+            summary = "User registration",
+            description = "Register new user with email verification. Sends verification code to email."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Verification code sent to email"),
+            @ApiResponse(responseCode = "400", description = "Invalid email format"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
+    })
     @PostMapping("/register")
-    public Mono<ResponseEntity<ApiResponseTutube<Void>>> register(@RequestBody RegistrationRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<Void>>> register(
+            @Parameter(description = "Registration request with user email", required = true)
+            @RequestBody RegistrationRequest request) {
         // 1. Проверяем валидность email
         if (!isValidEmail(request.getUserName())) {
             return Mono.just(ResponseEntity.badRequest()
@@ -55,8 +66,18 @@ public class AuthController {
                 ));
     }
 
+    @Operation(
+            summary = "Verify email and complete registration",
+            description = "Verify email with confirmation code and create user account. Password will be set as the verification code."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Email verified and user created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired verification code")
+    })
     @PostMapping("/verify")
-    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> verifyEmail(@RequestBody EmailVerificationRequest request) {
+    public Mono<ResponseEntity<ApiResponseTutube<UserDto>>> verifyEmail(
+            @Parameter(description = "Email verification request", required = true)
+            @RequestBody EmailVerificationRequest request) {
         return emailVerificationService.verifyCode(request.getEmail(), request.getCode())
                 .flatMap(isValid -> {
                     if (!isValid) {

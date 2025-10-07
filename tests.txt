@@ -1,7 +1,8 @@
 http://localhost:8082/
+http://158.160.158.16:8082/
 
-scp core-0.0.1-SNAPSHOT.jar heigan@51.250.38.89:~
-ssh heigan@51.250.38.89
+scp core-0.0.1-SNAPSHOT.jar heigan@158.160.158.16:~
+ssh heigan@158.160.158.16
 rm -rf db
 sudo systemctl restart myapp
 
